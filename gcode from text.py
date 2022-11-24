@@ -19,7 +19,7 @@ with open('text.txt') as file:
             if text[i].find(' ') == 0:
                 text[i] = text[i][1:]
         else:
-            i += 2
+            i += 1
     file.close()
 with open('text_r.txt', 'w') as file:
     for i in range(len(text)):
