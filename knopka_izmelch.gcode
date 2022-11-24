@@ -1,58 +1,8 @@
-;FLAVOR:Marlin
-;TIME:5885
-;Filament used: 4.43155m
-;Layer height: 0.2
-;MINX:73.97
-;MINY:72.7
-;MINZ:0.3
-;MAXX:134.3
-;MAXY:137.301
-;MAXZ:10.175
-;Generated with Cura_SteamEngine 5.2.1
-M82 ;absolute extrusion mode
-;Profil Homepage: https://github.com/NilsRo/Cura_Anycubic_MegaS_Profile
-
-;Slicer Information - (Support for OctoPrint Slicer Estimator)
-;Slicer info:material_guid;69386c85-5b6c-421a-bec5-aeb1fb33f060
-;Slicer info:material_id;generic_petg_175
-;Slicer info:material_brand;Generic
-;Slicer info:material_name;PETG
-;Slicer info:filament_cost;[0]
-;Slicer info:material_bed_temperature;75
-;Slicer info:material_bed_temperature_layer_0;75
-;Slicer info:material_print_temperature;230.0
-;Slicer info:material_print_temperature_layer_0;235.0
-;Slicer info:material_flow;100
-;Slicer info:layer_height;0.2
-;Slicer info:machine_nozzle_size;0.4
-;Slicer info:wall_thickness;1.2000000000000002
-;Slicer info:speed_print;50.0
-;Slicer info:speed_topbottom;25.0
-;Slicer info:travel_speed;120.0
-;Slicer info:support;0
-;Slicer info:retraction_speed;25.0
-;Slicer info:retraction_amount;6
-;Slicer info:layer_height;0.2
-;Slicer info:infill_pattern;grid
-;Slicer info:infill_sparse_density;25
-;Slicer info:cool_fan_enabled;True
-;Slicer info:cool_fan_speed;50.0
-;Slicer info:sliced_at;Wed 23-11-2022 22:07:59
-G21                                        ; metric values 
+G21                                        ; metric values
 G90                                        ; absolute positioning 
-M82                                        ; set extruder to absolute mode 
-M107                                       ; start with the fan off 
-M140 S75                                   ; Start heating the bed 
-G4 S60                                     ; wait 1 minute 
-M104 S235.0                                ; start heating the hot end 
-M190 S75                                   ; wait for bed 
-M109 S235.0                                ; wait for hotend 
-M300 S1000 P500                            ; BEEP heating done 
-G28 X0 Y10 Z0                              ; move X/Y to min endstops 
-M420 S1                                    ; Enable leveling 
-M420 Z2.0                                  ; Set leveling fading height to 2 mm 
-G0 Z0.15                                   ; lift nozzle a bit 
-G92 E0                                     ; zero the extruded length 
+G4 S60                                     ; wait 1 minute
+G28 X0 Y10 Z0                              ; move X/Y to min endstops
+G92 E0                                     ; zero the extruded length
 G1 X50 E20 F500                            ; Extrude 20mm of filament in a 5cm line. 
 G92 E0                                     ; zero the extruded length again 
 G1 E-2 F500                                ; Retract a little 
