@@ -1,9 +1,9 @@
-symbols = {'1': [[1, 0], [4, 0]], '7': [[1, 0], [1, 3], [4, 1]]}
+symbols = {'1': [[2.5, 0], [1, 2], [5, 2]], '7': [[1, 0], [1, 3], [5, 1]]}
 with open('text.txt') as file:
     text = file.read()
     file.close()
 with open('text.gcode', 'w') as gcode:
-    gcode.write('G21\nG90\nG4 S5\nG28 X Y\nG0 Z10\n')
+    gcode.write('G21\nG90\nG4 S5\nG0 Z2\n')
     offset_y = 10
     offset_x = 0
     for i in range(len(text)):
@@ -15,10 +15,10 @@ with open('text.gcode', 'w') as gcode:
                 gcode.write(f'G1 X{xy[a][0] + offset_x} Y{xy[a][1] + offset_y}\n')
                 if m_y < xy[a][1]:
                     m_y = xy[a][1]
+            gcode.write('G0 Z2\n')
         else:
-            gcode.write(f'G0 X{xy[0][0] + offset_x} Y0 Z0\n')
+            gcode.write(f'G0 X{xy[0][0] + offset_x} Y0\n')
             offset_x += 5
             offset_y = 0
-        gcode.write('G0 Z10\n')
         offset_y += m_y + 1
     gcode.close()
