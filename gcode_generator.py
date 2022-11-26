@@ -3,7 +3,7 @@ with open('text.txt') as file:
     text = file.read()
     file.close()
 with open('text.gcode', 'w') as gcode:
-    gcode.write('G21\nG90\nG4 S5\nG0 Z2\n')
+    gcode.write('G21\nG90\nG4 S5\nG92 X0 Y0 Z0\nG0 Z2\n')
     offset_y = 10
     offset_x = 0
     for i in range(len(text)):
