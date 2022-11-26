@@ -1,1 +1,3 @@
-print(69 - 69 % 5 + 5)
+space = False
+space = not space
+print(space)
