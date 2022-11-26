@@ -22,6 +22,3 @@ with open('text.txt', encoding='utf-8') as file:
 with open('text_r.txt', 'w') as file:
     for i in range(len(text)):
         file.write(text[i])
-gcode = open('text.gcode', 'w')
-gcode.write('G21\nG90\nG4 S5\nG28 X Y Z10\n')
-gcode.close()
