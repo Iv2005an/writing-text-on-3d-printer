@@ -1,3 +1,2 @@
-space = False
-space = not space
-print(space)
+from font.dict_generator import symbols  # словарь
+print(symbols)

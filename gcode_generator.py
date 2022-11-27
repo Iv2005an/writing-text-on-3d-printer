@@ -1,4 +1,4 @@
-symbols = {'1': [[2.5, 0], [1, 2], [5, 2]], '7': [[1, 0], [1, 3], [5, 1]]}  # словарь
+from font.symbols import symbols
 with open('text.txt') as file:  # источник
     text = file.read()
     file.close()

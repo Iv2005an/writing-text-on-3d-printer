@@ -2,14 +2,26 @@ from PIL import Image
 import glob
 
 png_count = glob.glob('*.png')
+indexes = []
 for png in png_count:
-    symbol = Image.open(png)
-    weight, height = symbol.size
-    symbol_pixels = list(symbol.getdata())
-    for i in range(0, len(symbol_pixels), weight):
-        symbol_pixels[i] = symbol_pixels[i:weight]
-print('-----DEBUG-----')
-print(png_count)
-print(weight, height)
-print(symbol.mode)
-print(symbol_pixels)
+    with Image.open(png) as symbol:
+        width, height = symbol.size
+        pixels = list(symbol.getdata())
+        pixels = [255 - pixels[i][0] for i in range(width * height)]
+        pixels = [pixels[i * width:(i + 1) * width] for i in range(height)]
+        a = 0
+        index = []
+        for s in range(len(pixels)):
+            for i in range(len(pixels[s])):
+                if pixels[s][i] > 0:
+                    index.append([s / 10, i / 10, pixels[s][i]])
+                    a += 1
+        index.sort(key=lambda x: x[2], reverse=True)
+        for i in range(len(index)):
+            index[i].pop(-1)
+        indexes.append(index)
+
+symbol = [i[:-4] for i in png_count]
+symbols = dict(zip(symbol, indexes))
+with open('symbols.py', 'w') as file:
+    file.write('symbols = ' + str(symbols))
