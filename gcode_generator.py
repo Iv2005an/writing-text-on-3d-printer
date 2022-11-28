@@ -1,7 +1,35 @@
-from font.symbols import symbols
-with open('text.txt') as file:  # источник
+from PIL import Image
+import glob
+
+# ГЕНЕРАТОР СЛОВАРЯ
+png_count = glob.glob('font/*.png')
+indexes = []
+for png in png_count:
+    with Image.open(png) as symbol:
+        width, height = symbol.size
+        pixels = list(symbol.getdata())
+        pixels = [255 - pixels[i][0] for i in range(width * height)]
+        pixels = [pixels[i * width:(i + 1) * width] for i in range(height)]
+        a = 0
+        index = []
+        for s in range(len(pixels)):
+            for i in range(len(pixels[s])):
+                if pixels[s][i] > 0:
+                    index.append([s / 10, i / 10, pixels[s][i]])
+                    a += 1
+        index.sort(key=lambda x: x[2], reverse=True)
+        for i in range(len(index)):
+            index[i].pop(-1)
+        indexes.append(index)
+symbol = [i[5:-4] for i in png_count]
+symbols = dict(zip(symbol, indexes))
+
+# ИСТОЧНИК
+with open('text.txt') as file:
     text = file.read()
     file.close()
+
+# ГЕНЕРАТОР GCODE
 with open('text.gcode', 'w') as gcode:  # создание файла gcode
     gcode.write('G21\nG90\nG4 S5\nG92 X0 Y0 Z0\nG0 Z2\n')  # инициализация
     offset_y = 0
@@ -9,7 +37,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
     last_x = 0
     last_y = 0
     space = False
-    for i in range(len(text)):
+    for i in range(len(text)):  # посимвольно
         m_y = 0
         if '1234567890'.count(text[i]) > 0:
             xy = symbols[text[i]]
