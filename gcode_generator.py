@@ -25,8 +25,6 @@ for png in png_count:
 symbol = [i[5:-4] for i in png_count]
 symbols = dict(zip(symbol, indexes))
 
-# ФУНКЦИЯ ОПРЕДЕЛЕНИЯ КООРДИНАТ
-
 # ИСТОЧНИК
 with open('text.txt', encoding='utf-8') as file:
     text = file.read()
@@ -34,11 +32,12 @@ with open('text.txt', encoding='utf-8') as file:
 
 # ФОРМАТИРОВАНИЕ ТЕКСТА
 with open('text_f.txt', 'w', encoding='utf-8') as file:
-    length = 0
     m_y = 0
+    length = 0
     p_i = 0
+    s_i = 0
     for i in range(len(text)):
-        if '1234567890'.count(text[i]) > 0:
+        if '1234567890абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:
             xy = symbols[text[i]]
         elif 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
             if text[i] == 'Ё':
@@ -47,21 +46,16 @@ with open('text_f.txt', 'w', encoding='utf-8') as file:
                 xy = symbols['_И']
             else:
                 xy = symbols[f'_{text[i]}']
-        elif 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:
-            xy = symbols[text[i]]
         for a in range(len(xy)):
-            if m_y < xy[a][1]:  # крайняя координата символа
+            if m_y < xy[a][1]:
                 m_y = xy[a][1]
         length += m_y
         if length > 130:
-            s_i = i  # text.rfind(' ', 0, i)
-            if s_i == -1:
-                file.write(text[p_i:text.find(' ')] + '\n')
+            s_i = text.find(' ', i)
+            if p_i == 0:
+                file.write(text[p_i:s_i] + '\n')
             else:
-                if p_i == 0:
-                    file.write(text[p_i:s_i] + '\n')
-                else:
-                    file.write(text[p_i + 1:s_i] + '\n')
+                file.write(text[p_i + 1:s_i] + '\n')
             p_i = s_i
             length = 0
     file.write(text[p_i + 1:])
