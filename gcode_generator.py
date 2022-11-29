@@ -25,10 +25,46 @@ for png in png_count:
 symbol = [i[5:-4] for i in png_count]
 symbols = dict(zip(symbol, indexes))
 
+# ФУНКЦИЯ ОПРЕДЕЛЕНИЯ КООРДИНАТ
+
 # ИСТОЧНИК
 with open('text.txt', encoding='utf-8') as file:
     text = file.read()
     file.close()
+
+# ФОРМАТИРОВАНИЕ ТЕКСТА
+with open('text_f.txt', 'w', encoding='utf-8') as file:
+    length = 0
+    m_y = 0
+    p_i = 0
+    for i in range(len(text)):
+        if '1234567890'.count(text[i]) > 0:
+            xy = symbols[text[i]]
+        elif 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
+            if text[i] == 'Ё':
+                xy = symbols['_Е']
+            elif text[i] == 'Й':
+                xy = symbols['_И']
+            else:
+                xy = symbols[f'_{text[i]}']
+        elif 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:
+            xy = symbols[text[i]]
+        for a in range(len(xy)):
+            if m_y < xy[a][1]:  # крайняя координата символа
+                m_y = xy[a][1]
+        length += m_y
+        if length > 130:
+            s_i = i  # text.rfind(' ', 0, i)
+            if s_i == -1:
+                file.write(text[p_i:text.find(' ')] + '\n')
+            else:
+                if p_i == 0:
+                    file.write(text[p_i:s_i] + '\n')
+                else:
+                    file.write(text[p_i + 1:s_i] + '\n')
+            p_i = s_i
+            length = 0
+    file.write(text[p_i + 1:])
 
 # ГЕНЕРАТОР GCODE
 with open('text.gcode', 'w') as gcode:  # создание файла gcode
@@ -40,7 +76,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
     space = False
     for i in range(len(text)):  # посимвольно
         m_y = 0
-        if '1234567890'.count(text[i]) > 0:  # не соединяемые символы
+        if '1234567890'.count(text[i]) > 0:
             xy = symbols[text[i]]
             gcode.write(f'G0 X{xy[0][0] + offset_x} Y{xy[0][1] + offset_y} Z2\nG0 Z0\n')
             for a in range(len(xy)):
@@ -91,7 +127,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
                     last_y = s[a][1]
                 gcode.write('G0 Z2\n')  # поднятие ручки
                 gcode.write(f'G0 X{p[0][0] + offset_x} Y{p[0][1] + offset_y} Z2\nG0 Z0\n')
-                for a in range(len(p_l)):
+                for a in range(len(p)):
                     gcode.write(f'G1 X{p[a][0] + offset_x} Y{p[a][1] + offset_y}\n')
                     if m_y < p[a][1]:  # крайняя координата символа
                         m_y = p[a][1]
