@@ -51,11 +51,11 @@ with open('text_f.txt', 'w', encoding='utf-8') as file:
                 m_y = xy[a][1]
         length += m_y
         if length > 130:
-            s_i = text.find(' ', i)
+            s_i = i  # text.find(' ', i)
             if p_i == 0:
-                file.write(text[p_i:s_i] + '\n')
+                file.write(text[p_i:s_i + 1] + '\n')
             else:
-                file.write(text[p_i + 1:s_i] + '\n')
+                file.write(text[p_i + 1:s_i + 1] + '\n')
             p_i = s_i
             length = 0
     file.write(text[p_i + 1:])
