@@ -55,18 +55,16 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         m_y = 0
         if '1234567890'.count(text[i]) > 0:
             xy(symbols[text[i]])
+            gcode.write('G0 Z2\n')  # поднятие ручки
         elif 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
             if text[i] == 'Ё':
                 s = symbols['_Е']
                 p_l = symbols['L^_Е']
                 p_r = symbols['R^_Е']
-                gcode.write(f'G0 X{s[0][0] + offset_x} Y{s[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(s)
                 gcode.write('G0 Z2\n')  # поднятие ручки
-                gcode.write(f'G0 X{p_l[0][0] + offset_x} Y{p_l[0][1] + offset_y}\nG0 Z0\n')
                 xy(p_l)
                 gcode.write('G0 Z2\n')  # поднятие ручки
-                gcode.write(f'G0 X{p_r[0][0] + offset_x} Y{p_r[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(p_r)
                 gcode.write('G0 Z2\n')  # поднятие ручки
             elif text[i] == 'Й':
@@ -80,7 +78,6 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
                 gcode.write('G0 Z2\n')  # поднятие ручки
             else:
                 s = symbols[f'_{text[i]}']
-                gcode.write(f'G0 X{s[0][0] + offset_x} Y{s[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(s)
                 gcode.write('G0 Z2\n')  # поднятие ручки
         elif 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:  # соединяемые символы
@@ -96,20 +93,15 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
                 xy(s)
                 gcode.write('G0 Z2\n')  # поднятие ручки
                 last_yo = s[-1]
-                gcode.write(f'G0 X{p_l[0][0] + offset_x} Y{p_l[0][1] + offset_y}\nG0 Z0\n')
                 xy(p_l)
                 gcode.write('G0 Z2\n')  # поднятие ручки
-                gcode.write(f'G0 X{p_r[0][0] + offset_x} Y{p_r[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(p_r)
                 gcode.write('G0 Z2\n')  # поднятие ручки
-                gcode.write(f'G0 X{last_yo[0] + offset_x} Y{last_yo[1] + offset_y}\n')
             elif text[i] == 'й':
                 s = symbols['и']
                 p = symbols['^и']
-                gcode.write(f'G0 X{s[0][0] + offset_x} Y{s[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(s)
                 gcode.write('G0 Z2\n')  # поднятие ручки
-                gcode.write(f'G0 X{p[0][0] + offset_x} Y{p[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(p)
                 gcode.write('G0 Z2\n')  # поднятие ручки
             else:
@@ -127,12 +119,10 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
                     last_x = s[a][0]
                     last_y = s[a][1]
         elif text[i] == '\n':  # новая строка
-            gcode.write(f'G0 X{last_x + offset_x} Y0 Z2\n')
             offset_x += 5
             offset_y = 0
             space = True
         elif text[i] == ' ':  # пробел
-            gcode.write(f'G0 Y{2.5 + offset_y} Z2\n')
             offset_y += 2.5
             space = True
         else:
