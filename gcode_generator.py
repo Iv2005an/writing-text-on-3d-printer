@@ -70,10 +70,8 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
             elif text[i] == 'Й':
                 s = symbols['_И']
                 p = symbols['^_И']
-                gcode.write(f'G0 X{s[0][0] + offset_x} Y{s[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(s)
                 gcode.write('G0 Z2\n')  # поднятие ручки
-                gcode.write(f'G0 X{p[0][0] + offset_x} Y{p[0][1] + offset_y} Z2\nG0 Z0\n')
                 xy(p)
                 gcode.write('G0 Z2\n')  # поднятие ручки
             else:
@@ -85,11 +83,6 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
                 s = symbols['е']
                 p_l = symbols['L^е']
                 p_r = symbols['R^е']
-                if i > 0:
-                    if 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i - 1]) > 0:
-                        gcode.write(f'G1 X{s[0][0] + offset_x} Y{s[0][1] + offset_y}\n')
-                    else:
-                        gcode.write(f'G0 X{s[0][0] + offset_x} Y{s[0][1] + offset_y}\nG0 Z0\n')
                 xy(s)
                 gcode.write('G0 Z2\n')  # поднятие ручки
                 last_yo = s[-1]
@@ -107,17 +100,12 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
             else:
                 s = symbols[text[i]]
                 if i > 0:
-                    if 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i - 1]) > 0:
+                    if 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[i - 1]) > 0:
                         gcode.write('G1')
                     else:
                         gcode.write('G0')
                 gcode.write(f' X{s[0][0] + offset_x} Y{s[0][1] + offset_y}\nG0 Z0\n')
-                for a in range(1, len(s)):
-                    gcode.write(f'G1 X{s[a][0] + offset_x} Y{s[a][1] + offset_y}\n')
-                    if m_y < s[a][1]:  # крайняя координата символа
-                        m_y = s[a][1]
-                    last_x = s[a][0]
-                    last_y = s[a][1]
+                xy(s)
         elif text[i] == '\n':  # новая строка
             offset_x += 5
             offset_y = 0
