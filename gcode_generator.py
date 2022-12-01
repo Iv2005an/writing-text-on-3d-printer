@@ -40,72 +40,60 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
     space = False
 
 
-    def xy(axes):
+    def xy(axes, ind):
         global offset_x, offset_y, m_y, last_y, last_x
-        gcode.write(f'G0 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y}\nG0 Z0\n')
+        if ind > 0 and 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(
+                text[ind]) > 0 and 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[ind - 1]) > 0:
+            gcode.write(f'G1 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y}\n')
+        else:
+            gcode.write(f'G0 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y}\nG0 Z0\n')
         for i in range(1, len(axes)):
             gcode.write(f'G1 X{axes[i][0] + offset_x} Y{axes[i][1] + offset_y}\n')
             if m_y < axes[i][1]:  # крайняя координата символа
                 m_y = axes[i][1]
             last_x = axes[i][0]
             last_y = axes[i][1]
+        if ind < len(text) - 1:
+            if not 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[ind + 1]) > 0:
+                gcode.write('G0 Z2\n')  # поднятие ручки
 
 
     for i in range(len(text)):  # посимвольно
         m_y = 0
         if '1234567890'.count(text[i]) > 0:
-            xy(symbols[text[i]])
-            gcode.write('G0 Z2\n')  # поднятие ручки
+            xy(symbols[text[i]], i)
         elif 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
             if text[i] == 'Ё':
                 s = symbols['_Е']
                 p_l = symbols['L^_Е']
                 p_r = symbols['R^_Е']
-                xy(s)
-                gcode.write('G0 Z2\n')  # поднятие ручки
-                xy(p_l)
-                gcode.write('G0 Z2\n')  # поднятие ручки
-                xy(p_r)
-                gcode.write('G0 Z2\n')  # поднятие ручки
+                xy(s, i)
+                xy(p_l, i)
+                xy(p_r, i)
             elif text[i] == 'Й':
                 s = symbols['_И']
                 p = symbols['^_И']
-                xy(s)
-                gcode.write('G0 Z2\n')  # поднятие ручки
-                xy(p)
-                gcode.write('G0 Z2\n')  # поднятие ручки
+                xy(s, i)
+                xy(p, i)
             else:
                 s = symbols[f'_{text[i]}']
-                xy(s)
-                gcode.write('G0 Z2\n')  # поднятие ручки
+                xy(s, i)
         elif 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:  # соединяемые символы
             if text[i] == 'ё':
                 s = symbols['е']
                 p_l = symbols['L^е']
                 p_r = symbols['R^е']
-                xy(s)
-                gcode.write('G0 Z2\n')  # поднятие ручки
-                last_yo = s[-1]
-                xy(p_l)
-                gcode.write('G0 Z2\n')  # поднятие ручки
-                xy(p_r)
-                gcode.write('G0 Z2\n')  # поднятие ручки
+                xy(s, i)
+                xy(p_l, i)
+                xy(p_r, i)
             elif text[i] == 'й':
                 s = symbols['и']
                 p = symbols['^и']
-                xy(s)
-                gcode.write('G0 Z2\n')  # поднятие ручки
-                xy(p)
-                gcode.write('G0 Z2\n')  # поднятие ручки
+                xy(s, i)
+                xy(p, i)
             else:
                 s = symbols[text[i]]
-                if i > 0:
-                    if 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[i - 1]) > 0:
-                        gcode.write('G1')
-                    else:
-                        gcode.write('G0')
-                gcode.write(f' X{s[0][0] + offset_x} Y{s[0][1] + offset_y}\nG0 Z0\n')
-                xy(s)
+                xy(s, i)
         elif text[i] == '\n':  # новая строка
             offset_x += 5
             offset_y = 0
