@@ -32,7 +32,7 @@ with open('text.txt', encoding='utf-8') as file:
 
 # ГЕНЕРАТОР GCODE
 with open('text.gcode', 'w') as gcode:  # создание файла gcode
-    gcode.write('G21\nG90\nG4 S5\nG92 X0 Y0 Z0\nG0 Z2\n')  # инициализация
+    gcode.write('G21\nG90\nG4 S5\nG92 X0 Y0 Z0\nG0 Z2 F6000\n')  # инициализация
     offset_y = 0
     offset_x = 0
     last_x = 0
@@ -44,18 +44,21 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         global offset_x, offset_y, m_y, last_y, last_x
         if ind > 0 and 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(
                 text[ind]) > 0 and 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[ind - 1]) > 0:
-            gcode.write(f'G1 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y}\n')
+            gcode.write(f'G1 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y} F3600\n')  # перемещение к точке
         else:
-            gcode.write(f'G0 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y}\nG0 Z0\n')
+            gcode.write(
+                f'G0 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y} F6000\nG0 Z0 F6000\n')  # перемещение к точке
         for i in range(1, len(axes)):
-            gcode.write(f'G1 X{axes[i][0] + offset_x} Y{axes[i][1] + offset_y}\n')
+            gcode.write(f'G1 X{axes[i][0] + offset_x} Y{axes[i][1] + offset_y} F3600\n')  # написание символа
             if m_y < axes[i][1]:  # крайняя координата символа
                 m_y = axes[i][1]
             last_x = axes[i][0]
             last_y = axes[i][1]
         if ind < len(text) - 1:
-            if not 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[ind + 1]) > 0:
-                gcode.write('G0 Z2\n')  # поднятие ручки
+            if not 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(
+                    text[ind]) > 0 or not 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[ind + 1]) > 0 or 'ёй'.count(
+                    text[ind]) > 0:
+                gcode.write('G0 Z2 F6000\n')  # поднятие ручки
 
 
     for i in range(len(text)):  # посимвольно
