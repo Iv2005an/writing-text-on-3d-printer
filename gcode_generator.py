@@ -5,9 +5,9 @@ import glob
 png_count = glob.glob('font/*.png')
 indexes = []
 for png in png_count:
-    with Image.open(png) as symbol:
-        width, height = symbol.size
-        pixels = list(symbol.getdata())
+    with Image.open(png) as im:
+        width, height = im.size
+        pixels = list(im.getdata())
         pixels = [255 - pixels[i][0] for i in range(width * height)]
         pixels = [pixels[i * width:(i + 1) * width] for i in range(height)]
         a = 0
@@ -22,13 +22,12 @@ for png in png_count:
             index[i].pop(-1)
         indexes.append(index)
 
-symbol = [i[5:-4] for i in png_count]
-symbols = dict(zip(symbol, indexes))
+symbols = dict(zip([i[5:-4] for i in png_count], indexes))
 
 # ИСТОЧНИК
-with open('text.txt', encoding='utf-8') as file:
-    text = file.read()
-    file.close()
+with open('text.txt', encoding='utf-8') as t:
+    text = t.read()
+    t.close()
 
 # ГЕНЕРАТОР GCODE
 with open('text.gcode', 'w') as gcode:  # создание файла gcode
@@ -37,13 +36,17 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
     offset_x = 0
     last_x = 0
     last_y = 0
-    space = False
+    first = True
+    with open('font/connected.txt', encoding='utf-8') as u:
+        connected = u.read()
+        u.close()
 
 
-    def xy(axes, ind):
+    def xy(symbol, ind):
+        axes = symbols[symbol]
         global offset_x, offset_y, m_y, last_y, last_x
-        if ind > 0 and 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(
-                text[ind]) > 0 and 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[ind - 1]) > 0:
+        if ind > 0 and connected.count(text[ind]) > 0 \
+                and connected.count(text[ind - 1]) > 0:
             gcode.write(f'G1 X{axes[0][0] + offset_x} Y{axes[0][1] + offset_y} F3600\n')  # перемещение к точке
         else:
             gcode.write(
@@ -55,59 +58,70 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
             last_x = axes[i][0]
             last_y = axes[i][1]
         if ind < len(text) - 1:
-            if not 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(
-                    text[ind]) > 0 or not 'абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[ind + 1]) > 0 or 'ёй'.count(
-                    text[ind]) > 0:
+            if not connected.count(text[ind]) > 0 \
+                    or not connected.count(text[ind + 1]) > 0:
                 gcode.write('G0 Z2 F6000\n')  # поднятие ручки
 
 
     for i in range(len(text)):  # посимвольно
         m_y = 0
-        if '1234567890'.count(text[i]) > 0:
-            xy(symbols[text[i]], i)
-        elif 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
-            if text[i] == 'Ё':
-                s = symbols['_Е']
-                p_l = symbols['L^_Е']
-                p_r = symbols['R^_Е']
-                xy(s, i)
-                xy(p_l, i)
-                xy(p_r, i)
-            elif text[i] == 'Й':
-                s = symbols['_И']
-                p = symbols['^_И']
-                xy(s, i)
-                xy(p, i)
+        if '1234567890абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:
+            xy(text[i], i)
+        elif 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
+            xy(f'_{text[i]}', i)
+        elif text[i] == 'Ё':
+            xy('_Е', i)
+            xy('L^_Е', i)
+            xy('R^_Е', i)
+        elif text[i] == 'Й':
+            xy('_И', i)
+            xy('^_И', i)
+        elif text[i] == 'ё':
+            xy('е', i)
+            xy('L^е', i)
+            xy('R^е', i)
+        elif text[i] == 'й':
+            xy('и', i)
+            xy('^и', i)
+        elif ',-'.count(text[i]) > 0:
+            xy(text[i], i)
+        elif text[i] == '.':
+            xy('dot', i)
+        elif text[i] == ':':
+            xy('_dot', i)
+            xy('^dot', i)
+        elif text[i] == ';':
+            xy('_,', i)
+            xy('^dot', i)
+        elif text[i] == '?':
+            xy('_q', i)
+            xy('^q', i)
+        elif text[i] == '!':
+            xy('dot', i)
+            xy('ex', i)
+        elif text[i] == '"':
+            if first:
+                xy('_,,L', i)
+                xy('_,,R', i)
+                first = False
             else:
-                s = symbols[f'_{text[i]}']
-                xy(s, i)
-        elif 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:  # соединяемые символы
-            if text[i] == 'ё':
-                s = symbols['е']
-                p_l = symbols['L^е']
-                p_r = symbols['R^е']
-                xy(s, i)
-                xy(p_l, i)
-                xy(p_r, i)
-            elif text[i] == 'й':
-                s = symbols['и']
-                p = symbols['^и']
-                xy(s, i)
-                xy(p, i)
-            else:
-                s = symbols[text[i]]
-                xy(s, i)
+                xy('^,,L', i)
+                xy('^,,R', i)
+                first = True
         elif text[i] == '\n':  # новая строка
             offset_x += 5
             offset_y = 0
-            space = True
         elif text[i] == ' ':  # пробел
             offset_y += 2.5
-            space = True
         else:
             print('else: ' + text[i])
-        if not space:
+        if '.,:;?!-'.count(text[i]) > 0:
+            offset_y += m_y + 2
+            continue
+        if i < len(text) - 1:
+            if '.,:;?!-"'.count(text[i + 1]) > 0:
+                offset_y += m_y + 0.1
+                continue
+        if not ' \n'.count(text[i]) > 0:
             offset_y += m_y + 1
-        else:
-            space = not space
     gcode.close()
