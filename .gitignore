@@ -1,4 +1,5 @@
 .idea/
+gcode_generator/
+gcode_generator.zip
 .DS_Store
 text.gcode
-build/
