@@ -130,7 +130,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         elif text[i] == ' ':  # пробел
             offset_y += 2.5
         else:
-            print(f'{text[i]} was not found')
+            print(f'"{text[i]}" not supported')
             el = True
         if not ' \n'.count(text[i]) > 0:
             offset_y += m_y + 1
