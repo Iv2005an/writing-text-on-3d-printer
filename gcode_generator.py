@@ -1,5 +1,6 @@
 from PIL import Image
 import glob
+import sys
 
 # ГЕНЕРАТОР СЛОВАРЯ
 png_count = glob.glob('font/*.png')
@@ -25,9 +26,13 @@ for png in png_count:
 symbols = dict(zip([i[5:-4] for i in png_count], indexes))
 
 # ИСТОЧНИК
-with open('text.txt', encoding='utf-8') as t:
-    text = t.read()
-    t.close()
+try:
+    with open('text.txt', encoding='utf-8') as t:
+        text = t.read()
+except FileNotFoundError:
+    print('the "text" file was not found')
+    input()
+    sys.exit()
 
 # ГЕНЕРАТОР GCODE
 with open('text.gcode', 'w') as gcode:  # создание файла gcode
@@ -37,13 +42,21 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
     last_x = 0
     last_y = 0
     first = True
-    with open('font/connected.txt', encoding='utf-8') as u:
-        connected = u.read()
-        u.close()
-
+    try:
+        with open('font\\connected.txt', encoding='utf-8') as u:
+            connected = u.read()
+    except FileNotFoundError:
+        print('the "font\\connected.txt" file was not found')
+        input()
+        sys.exit()
 
     def xy(symbol, ind):
-        axes = symbols[symbol]
+        try:
+            axes = symbols[symbol]
+        except KeyError:
+            print(f'the "font\\{symbol}.png" file was not found')
+            input()
+            sys.exit()
         global offset_x, offset_y, m_y, last_y, last_x
         if ind > 0 and connected.count(text[ind]) > 0 \
                 and connected.count(text[ind - 1]) > 0:
@@ -83,7 +96,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         elif text[i] == 'й':
             xy('и', i)
             xy('^и', i)
-        elif ',-'.count(text[i]) > 0:
+        elif ',-()[]{}'.count(text[i]) > 0:
             xy(text[i], i)
         elif text[i] == '.':
             xy('dot', i)
@@ -114,7 +127,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         elif text[i] == ' ':  # пробел
             offset_y += 2.5
         else:
-            print('else: ' + text[i])
+            print(f'{text[i]} was not found')
         if '.,:;?!-'.count(text[i]) > 0:
             offset_y += m_y + 2
             continue
