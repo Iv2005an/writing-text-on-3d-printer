@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --console --icon "D:/Programming/GitHub/writing-text-on-3d-printer/logo.ico"  "D:/Programming/GitHub/writing-text-on-3d-printer/gcode_generator.py"

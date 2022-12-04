@@ -30,7 +30,7 @@ try:
     with open('text.txt', encoding='utf-8') as t:
         text = t.read()
 except FileNotFoundError:
-    print('the "text" file was not found')
+    print('the "text.txt" file was not found')
     input()
     sys.exit()
 
@@ -42,6 +42,8 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
     last_x = 0
     last_y = 0
     first = True
+    el = False
+
     try:
         with open('font\\connected.txt', encoding='utf-8') as u:
             connected = u.read()
@@ -49,6 +51,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         print('the "font\\connected.txt" file was not found')
         input()
         sys.exit()
+
 
     def xy(symbol, ind):
         try:
@@ -78,9 +81,9 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
 
     for i in range(len(text)):  # посимвольно
         m_y = 0
-        if '1234567890абвгдежзиклмнопрстуфхцчшщъыьэюя'.count(text[i]) > 0:
+        if '1234567890абвгдежзиклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz'.count(text[i]) > 0:
             xy(text[i], i)
-        elif 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.count(text[i]) > 0:
+        elif 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ'.count(text[i]) > 0:
             xy(f'_{text[i]}', i)
         elif text[i] == 'Ё':
             xy('_Е', i)
@@ -128,13 +131,9 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
             offset_y += 2.5
         else:
             print(f'{text[i]} was not found')
-        if '.,:;?!-'.count(text[i]) > 0:
-            offset_y += m_y + 2
-            continue
-        if i < len(text) - 1:
-            if '.,:;?!-"'.count(text[i + 1]) > 0:
-                offset_y += m_y + 0.1
-                continue
+            el = True
         if not ' \n'.count(text[i]) > 0:
             offset_y += m_y + 1
+    if el:
+        input()
     gcode.close()
