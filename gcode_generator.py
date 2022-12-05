@@ -81,7 +81,7 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
 
     for i in range(len(text)):  # посимвольно
         m_y = 0
-        if '1234567890абвгдежзиклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz'.count(text[i]) > 0:
+        if '1234567890абвгдежзиклмнопрстуфхцчшщъыьэюяabcdefghklmnopqrstuvwxyz'.count(text[i]) > 0:
             xy(text[i], i)
         elif 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ'.count(text[i]) > 0:
             xy(f'_{text[i]}', i)
@@ -99,6 +99,12 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         elif text[i] == 'й':
             xy('и', i)
             xy('^и', i)
+        elif text[i] == 'i':
+            xy('i', i)
+            xy('^i', i)
+        elif text[i] == 'j':
+            xy('j', i)
+            xy('^j', i)
         elif ',-()[]{}'.count(text[i]) > 0:
             xy(text[i], i)
         elif text[i] == '.':
