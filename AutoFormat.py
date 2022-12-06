@@ -33,11 +33,6 @@ except FileNotFoundError:
 
 # ГЕНЕРАТОР GCODE
 with open('text.gcode', 'w') as gcode:  # создание файла gcode
-    gcode.write('G21\nG90\nG4 S5\nG92 X0 Y0 Z0\nG0 Z2 F6000\n')  # инициализация
-    offset_y = 0
-    offset_x = 0
-    last_x = 0
-    last_y = 0
     first = True
     el = False
 
