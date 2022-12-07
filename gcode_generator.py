@@ -139,4 +139,3 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
             offset_y += m_y + 1
     if el:
         input()
-    gcode.close()
