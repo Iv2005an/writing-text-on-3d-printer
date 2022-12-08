@@ -36,6 +36,8 @@ with open('text_f.txt', 'w') as file:
     first = True
     el = False
     length = 0
+    i = 0
+    s = 0
 
 
     def max_y(symbol):
@@ -50,10 +52,10 @@ with open('text_f.txt', 'w') as file:
             if m_y < axes[i][1]:  # крайняя координата символа
                 m_y = axes[i][1]
                 m_y += 1
-                return m_y
+        return m_y
 
 
-    while i < len(text):  # посимвольно
+    while i < len(text) and s < 40:  # посимвольно
         if '1234567890абвгдежзиклмнопрстуфхцчшщъыьэюяabcdefghklmnopqrstuvwxyz'.count(text[i]) > 0:
             length += max_y(text[i])
         elif 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ'.count(text[i]) > 0:
@@ -93,16 +95,18 @@ with open('text_f.txt', 'w') as file:
                 first = True
         elif text[i] == '\n':  # новая строка
             length = 0
-            i += 1
-            continue
+            s += 1
         elif text[i] == ' ':  # пробел
             length += 2.5
         else:
             print(f'"{text[i]}" not supported, remove from "text.txt"')
             el = True
-        if length > 65:
-            text = text[:i] + '\n' + text[i:]
+        if length > 116:
+            text = text[:i] + '|' + text[i:]
             length = 0
+            s += 1
+            if text[i + 1] == ' ':
+                text = text[:i + 1] + text[i + 2:]
         i += 1
     if el:
         input()
