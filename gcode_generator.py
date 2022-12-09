@@ -130,6 +130,8 @@ with open('text.gcode', 'w') as gcode:  # создание файла gcode
         elif text[i] == '\n':  # новая строка
             offset_x += 5
             offset_y = 0
+        elif text[i] == '\t':
+            offset_y += 10
         elif text[i] == ' ':  # пробел
             offset_y += 2.5
         else:
