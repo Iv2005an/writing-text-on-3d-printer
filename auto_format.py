@@ -96,6 +96,8 @@ with open('text_f.txt', 'w') as file:
         elif text[i] == '\n':  # новая строка
             length = 0
             s += 1
+        elif text[i] == '\t':  # таб
+            length += 10
         elif text[i] == ' ':  # пробел
             length += 2.5
         else:
