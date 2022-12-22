@@ -104,7 +104,7 @@ with open('text_f.txt', 'w') as file:
             print(f'"{text[i]}" not supported, remove from "text.txt"')
             el = True
         if length > 116:
-            text = text[:i] + '|' + text[i:]
+            text = text[:i] + '\n' + text[i:]
             length = 0
             s += 1
             if text[i + 1] == ' ':
